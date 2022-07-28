@@ -7,7 +7,7 @@ function errorMessage(err, res) {
     return res.status(400).send({ message: err.message });
   }
 
-  if (err.name === 'DocumentNotFoundError') {
+  if (err.name === 'NotFoundError') {
     return res.status(404).send({ message: err.message });
   }
 
