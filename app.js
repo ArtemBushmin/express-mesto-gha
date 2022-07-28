@@ -15,6 +15,9 @@ app.use((req, res, next) => {
 });
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
+app.use((res) => {
+  res.status(404).send({ message: 'Указан неверный путь' });
+});
 
 mongoose.connect('mongodb://localhost:27017/mestodb').then(() => {
   console.log('Connected to database on mongodb://127.0.0.1:27017/mestodb');
