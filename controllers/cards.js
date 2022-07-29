@@ -28,6 +28,9 @@ module.exports.deleteCard = (req, res) => {
     .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: err.message });
+      }
       if (err.name === 'DocumentNotFoundError') {
         return res.status(404).send({ message: err.message });
       }
