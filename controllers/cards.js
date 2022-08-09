@@ -1,44 +1,33 @@
 const Card = require('../models/card');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.id)
     .orFail()
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        const err = new Error('Нет возможности удалить карту другого пользователя');
+        err.statusCode = 403;
+        next(err);
       }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+      return res.send(card);
+    })
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   console.log(req.user._id);
   Card.findByIdAndUpdate(
     req.params.id,
@@ -47,18 +36,10 @@ module.exports.likeCard = (req, res) => {
   )
     .orFail()
     .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
@@ -66,13 +47,5 @@ module.exports.dislikeCard = (req, res) => {
   )
     .orFail()
     .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };

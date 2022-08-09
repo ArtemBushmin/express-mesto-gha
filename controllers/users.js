@@ -1,71 +1,70 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   const { id } = req.params;
   User.findById(id).orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+module.exports.getUserInfo = (req, res, next) => {
+  const { id } = req.user._id;
+  User.findById(id).orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+    .catch(next);
+};
+
+module.exports.createUser = (req, res, next) => {
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email, password: hash, name, about, avatar,
+    }))
+    .then((user) => res.send(user))
+    .catch((error) => {
+      if (error.code === 11000) {
+        const err = new Error('Указан неверный путь');
+        err.statusCode = 409;
+        next(err);
       }
-      return res.status(500).send({ message: err.message });
+      next(error);
     });
 };
 
-module.exports.updateUserProfile = (req, res) => {
+module.exports.updateUserProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(next);
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+      res.send({ token });
+    })
+    .catch(next);
 };
