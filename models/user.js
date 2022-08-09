@@ -39,13 +39,17 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль').statusCode(401));
+        const err = new Error('Неправильные почта или пароль');
+        err.statusCode = 401;
+        return Promise.reject(err);
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль').statusCode(401));
+            const err = new Error('Неправильные почта или пароль');
+            err.statusCode = 401;
+            return Promise.reject(err);
           }
 
           return user;
