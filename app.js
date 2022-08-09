@@ -40,11 +40,11 @@ app.post(
 app.use(auth);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
-app.use('/*', (req, res, next) => {
-  const err = new Error('Указан неверный путь');
-  err.statusCode = 404;
-  next(err);
-});
+// app.use('/*', (req, res, next) => {
+//   const err = new Error('Указан неверный путь');
+//   err.statusCode = 404;
+//   next(err);
+// });
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
