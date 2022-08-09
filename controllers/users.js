@@ -18,7 +18,11 @@ module.exports.getUserById = (req, res, next) => {
 module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id).orFail()
     .then((user) => res.status(200).send(user))
-    .catch(next);
+    .catch(() => {
+      const err = new Error('Указан неверный путь');
+      err.statusCode = 200;
+      next(err);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
