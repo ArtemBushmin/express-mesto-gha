@@ -18,7 +18,7 @@ module.exports.getUserById = (req, res, next) => {
 module.exports.getUserInfo = (req, res, next) => {
   const { id } = req.user._id;
   User.findById(id).orFail()
-    .then((user) => res.send(user))
+    .then((user) => res.status(200).send(user))
     .catch((error) => {
       if (error.name === 'ValidationError' || error.name === 'CastError') {
         const err = new Error('Указан неверный запрос');
