@@ -20,7 +20,7 @@ module.exports.getUserInfo = (req, res, next) => {
   User.findById(id).orFail()
     .then((user) => res.send(user))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
+      if (error.name === 'CastError') {
         const err = new Error('Указан неверный запрос');
         err.statusCode = 400;
         next(err);
