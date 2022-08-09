@@ -16,17 +16,9 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.getUserInfo = (req, res, next) => {
-  const { id } = req.user._id;
-  User.findById(id).orFail()
+  User.findById(req.user._id).orFail()
     .then((user) => res.status(200).send(user))
-    .catch((error) => {
-      if (error.name === 'ValidationError' || error.name === 'CastError') {
-        const err = new Error('Указан неверный запрос');
-        err.statusCode = 400;
-        next(err);
-      }
-      next(error);
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
