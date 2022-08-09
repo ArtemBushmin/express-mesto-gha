@@ -38,14 +38,6 @@ app.post(
   createUser,
 );
 app.use(auth);
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '62def0a742948ec662500c51',
-// вставьте сюда _id созданного в предыдущем пункте пользователя
-//   };
-
-//   next();
-// });
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 app.use('/*', (req, res, next) => {

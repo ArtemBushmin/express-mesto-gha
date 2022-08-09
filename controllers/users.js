@@ -30,6 +30,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
     }))
+    .then((user) => User.findOne({ _id: user._id }))
     .then((user) => res.send(user))
     .catch((error) => {
       if (error.code === 11000) {
