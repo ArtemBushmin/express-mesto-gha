@@ -15,12 +15,12 @@ module.exports.getUserById = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserInfo = (req, res) => {
+module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id).orFail()
     .then((user) => {
       res.send(user);
     })
-    .catch();
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -63,7 +63,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+      const token = jwt.sign({ _id: user._id }, '12345678', {
         expiresIn: '7d',
       });
       res.send({ jwt: token });
