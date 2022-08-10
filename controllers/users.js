@@ -17,7 +17,9 @@ module.exports.getUserById = (req, res, next) => {
 
 module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id).orFail()
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      res.status(200).send(user);
+    })
     .catch(next);
 };
 
@@ -64,7 +66,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
         expiresIn: '7d',
       });
-      res.send({ token });
+      res.send({ jwt: token });
     })
     .catch(next);
 };
