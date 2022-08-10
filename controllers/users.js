@@ -15,12 +15,12 @@ module.exports.getUserById = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserInfo = (req, res, next) => {
+module.exports.getUserInfo = (req, res) => {
   User.findById(req.user._id).orFail()
     .then((user) => {
       res.send(user);
     })
-    .catch(next);
+    .catch();
 };
 
 module.exports.createUser = (req, res, next) => {

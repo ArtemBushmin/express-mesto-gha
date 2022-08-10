@@ -70,5 +70,9 @@ Content-Type: application/json
 }
 
 ###
-GET  http://localhost:3000/users/me
+GET  http://localhost:3000/singup
+
+{
+
+}
 

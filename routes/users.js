@@ -30,7 +30,7 @@ userRoutes.patch(
   }),
   updateUserProfile,
 );
-userRoutes.get('/m', getUserInfo);
+userRoutes.get('/me', getUserInfo);
 userRoutes.patch(
   '/me/avatar',
   celebrate({

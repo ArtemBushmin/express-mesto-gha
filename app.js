@@ -7,7 +7,7 @@ const {
   login,
   createUser,
 } = require('./controllers/users');
-const { auth } = require('./middlewares/auth');
+// const { auth } = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -42,7 +42,7 @@ app.post(
 //   err.statusCode = 404;
 //   next(err);
 // });
-app.use(auth);
+// app.use(auth);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 app.use(errors());
