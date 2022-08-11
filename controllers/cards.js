@@ -24,7 +24,14 @@ module.exports.deleteCard = (req, res, next) => {
       }
       return res.send(card);
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'DocumentNotFoundError') {
+        const err = new Error('Пользователь не найден');
+        err.statusCode = 404;
+        next(err);
+      }
+      next(error);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -36,7 +43,14 @@ module.exports.likeCard = (req, res, next) => {
   )
     .orFail()
     .then((card) => res.send(card))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'DocumentNotFoundError') {
+        const err = new Error('Пользователь не найден');
+        err.statusCode = 404;
+        next(err);
+      }
+      next(error);
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -47,5 +61,12 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .orFail()
     .then((card) => res.send(card))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'DocumentNotFoundError') {
+        const err = new Error('Пользователь не найден');
+        err.statusCode = 404;
+        next(err);
+      }
+      next(error);
+    });
 };
