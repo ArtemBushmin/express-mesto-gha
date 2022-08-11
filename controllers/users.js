@@ -12,7 +12,14 @@ module.exports.getUserById = (req, res, next) => {
   const { id } = req.params;
   User.findById(id).orFail()
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'DocumentNotFoundError') {
+        const err = new Error('Пользователь не найден');
+        err.statusCode = 404;
+        next(err);
+      }
+      next(error);
+    });
 };
 
 module.exports.getUserInfo = (req, res, next) => {
