@@ -35,7 +35,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((error) => {
       if (error.code === 11000) {
-        const err = new Error('Указан неверный путь');
+        const err = new Error('Пользователь с таким email уже существует');
         err.statusCode = 409;
         next(err);
       }

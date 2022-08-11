@@ -11,6 +11,7 @@ const {
 const userRoutes = express.Router();
 
 userRoutes.get('/', getUsers);
+userRoutes.get('/me', getUserInfo);
 userRoutes.get(
   '/:id',
   celebrate({
@@ -30,7 +31,6 @@ userRoutes.patch(
   }),
   updateUserProfile,
 );
-userRoutes.get('/me', getUserInfo);
 userRoutes.patch(
   '/me/avatar',
   celebrate({
